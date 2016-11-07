@@ -5,6 +5,8 @@ var mainState = {
         game.load.image('bird', 'assets/bird.png');
         //load pipe sprite
         game.load.image('pipe', 'assets/pipe.png');
+        //load jump sound
+        game.load.audio('jump', 'assets/jump.wav');
     },
 
     create: function() { 
@@ -19,6 +21,9 @@ var mainState = {
         // Display the bird at the position x=100 and y=245
         this.bird = game.add.sprite(100, 245, 'bird');
         
+        //put jump sound into game
+        this.jumpSound = game.add.audio('jump');
+        
         // Add physics to the bird
         // Needed for: movements, gravity, collisions, etc.
         game.physics.arcade.enable(this.bird);
@@ -32,6 +37,7 @@ var mainState = {
         
         //changes centre of rotation for jump animation
         this.bird.anchor.setTo(-0.2, 0.5);
+        
         
         //Pipes
         // Create an empty group
@@ -84,6 +90,9 @@ var mainState = {
         
         //start animation
         animation.start();
+        
+        //play sound on jump
+        this.jumpSound.play();
     },
     
     addOnePipe: function(x, y) {
