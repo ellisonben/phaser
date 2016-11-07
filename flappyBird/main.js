@@ -59,7 +59,7 @@ var mainState = {
         
         //in the result of a collision with a pipe restart the game
         game.physics.arcade.overlap(
-            this.bird, this.pipes, this.restartGame, null, this); 
+            this.bird, this.pipes, this.hitPipe, null, this); 
             
         //cause bird to tilt forwards into dive if not tilted
         if (this.bird.angle < 20) {
@@ -68,6 +68,11 @@ var mainState = {
     },
     
     jump: function() {
+        //prevent jumping if dead
+        if (this.bird.alive == false) {
+            return;
+        }
+        
         //changes the bird's velocity to negative (upwards) 300
         this.bird.body.velocity.y = -300;
         
@@ -110,6 +115,24 @@ var mainState = {
         //increment score
         this.score += 1;
         this.labelScore.text = this.score;
+    },
+    
+    hitPipe: function() {
+        //if bird is already dead do nothing as fall effect already instigated
+        if (this.bird.alive == false) {
+            return;
+        }
+        
+        //set alive property of bird to false
+        this.bird.alive = false;
+        
+        //prevent new pipes appearing
+        game.time.events.remove(this.timer);
+        
+        //go through all the pipes and stop their movement
+        this.pipes.forEach( function(p) {
+            p.body.velocity.x = 0;
+        }, this);
     },
     
     restartGame: function() {
