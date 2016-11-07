@@ -2,7 +2,9 @@
 var mainState = {
     preload: function() { 
         //load bird sprite
-        game.load.image('bird', 'assets/bird.png');
+        //game.load.image('bird', 'assets/bird.png');
+        //load bird spritesheet
+        game.load.spritesheet('bird', 'assets/birdSpriteSheet.png', 74, 50, 8);
         //load pipe sprite
         game.load.image('pipe', 'assets/pipe.png');
         //load jump sound
@@ -20,6 +22,10 @@ var mainState = {
         //Bird
         // Display the bird at the position x=100 and y=245
         this.bird = game.add.sprite(100, 245, 'bird');
+        this.bird.frame = 0;
+        //animate bird
+        this.bird.animations.add('fly', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);
+        this.bird.animations.play('fly');
         
         //put jump sound into game
         this.jumpSound = game.add.audio('jump');
@@ -134,6 +140,9 @@ var mainState = {
         
         //set alive property of bird to false
         this.bird.alive = false;
+        
+        //stop flight animation on hit
+        this.bird.animations.stop();
         
         //prevent new pipes appearing
         game.time.events.remove(this.timer);
