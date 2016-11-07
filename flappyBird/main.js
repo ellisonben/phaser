@@ -24,7 +24,7 @@ var mainState = {
         game.physics.arcade.enable(this.bird);
         
         // Add gravity to the bird to make it fall
-        this.bird.body.gravity.y = 1000; 
+        this.bird.body.gravity.y = 800; 
         
         // Call the 'jump' function when the spacekey is hit
         var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -39,6 +39,11 @@ var mainState = {
         this.timer = game.time.events.loop(1500, this.addColumnOfPipes, this); 
 
         
+        //Print score in the top left in white
+        this.score = 0;
+        this.labelScore = game.add.text(20, 20, "0", 
+            { font: "30px Arial", fill: "#ffffff" });        
+        
     },
 
     update: function() {
@@ -48,12 +53,16 @@ var mainState = {
         // Call the 'restartGame' function
         if (this.bird.y < 0 || this.bird.y > 490) {
             this.restartGame();
-        }   
+        }
+        
+        //in the result of a collision with a pipe restart the game
+        game.physics.arcade.overlap(
+            this.bird, this.pipes, this.restartGame, null, this); 
     },
     
     jump: function() {
-        //changes the bird's velocity to negative (upwards) 350
-        this.bird.body.velocity.y = -350;
+        //changes the bird's velocity to negative (upwards) 300
+        this.bird.body.velocity.y = -300;
     },
     
     addOnePipe: function(x, y) {
@@ -78,9 +87,13 @@ var mainState = {
         //add the six pipes with hole at position 'hole' and 'hole+1'
         for (var i=0; i < 8; i++) {
             if (i != hole && i != hole + 1) {
-                addOnePipe(400, i*60 + 10);
+                this.addOnePipe(400, i*60 + 10);
             } 
         }
+        
+        //increment score
+        this.score += 1;
+        this.labelScore.text = this.score;
     },
     
     restartGame: function() {
