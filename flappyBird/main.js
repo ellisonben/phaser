@@ -3,6 +3,8 @@ var mainState = {
     preload: function() { 
         //load bird sprite
         game.load.image('bird', 'assets/bird.png');
+        //load pipe sprite
+        game.load.image('pipe', 'assets/pipe.png');
     },
 
     create: function() { 
@@ -12,6 +14,8 @@ var mainState = {
         // Set the physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
         
+        
+        //Bird
         // Display the bird at the position x=100 and y=245
         this.bird = game.add.sprite(100, 245, 'bird');
         
@@ -25,6 +29,15 @@ var mainState = {
         // Call the 'jump' function when the spacekey is hit
         var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         spaceKey.onDown.add(this.jump, this);
+        
+        
+        //Pipes
+        // Create an empty group
+        this.pipes = game.add.group(); 
+        
+        // create a column of pipes every 1.5 seconds
+        this.timer = game.time.events.loop(1500, this.addColumnOfPipes, this); 
+
         
     },
 
@@ -41,6 +54,33 @@ var mainState = {
     jump: function() {
         //changes the bird's velocity to negative (upwards) 350
         this.bird.body.velocity.y = -350;
+    },
+    
+    addOnePipe: function(x, y) {
+        //loads a pipe sprite at position (x,y)
+        var pipe = this.game.add.sprite(x, y, 'pipe');
+        //adds to pipes group - create function
+        this.pipes.add(pipe);
+        //enable physics on the pipe
+        game.physics.arcade.enable(pipe);
+        //gives pipe leftward velocity so that it goes across screen
+        pipe.body.velocity.x = -200;
+        //kill the pipe once it is out of view
+        pipe.checkWorldBounds = true;
+        pipe.outOfBoundsKill = true;
+    },
+    
+    
+    addColumnOfPipes: function() {
+        //randomly assign hole position
+        var hole = Math.floor(Math.random() *5) + 1;
+        
+        //add the six pipes with hole at position 'hole' and 'hole+1'
+        for (var i=0; i < 8; i++) {
+            if (i != hole && i != hole + 1) {
+                addOnePipe(400, i*60 + 10);
+            } 
+        }
     },
     
     restartGame: function() {
