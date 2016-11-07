@@ -30,6 +30,8 @@ var mainState = {
         var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         spaceKey.onDown.add(this.jump, this);
         
+        //changes centre of rotation for jump animation
+        this.bird.anchor.setTo(-0.2, 0.5);
         
         //Pipes
         // Create an empty group
@@ -58,11 +60,25 @@ var mainState = {
         //in the result of a collision with a pipe restart the game
         game.physics.arcade.overlap(
             this.bird, this.pipes, this.restartGame, null, this); 
+            
+        //cause bird to tilt forwards into dive if not tilted
+        if (this.bird.angle < 20) {
+            this.bird.angle += 1;
+        }
     },
     
     jump: function() {
         //changes the bird's velocity to negative (upwards) 300
         this.bird.body.velocity.y = -300;
+        
+        //bird tilt animation
+        var animation = game.add.tween(this.bird);
+        
+        //change the angle of the bird to -20 over 100ms
+        animation.to({angle: -20}, 100);
+        
+        //start animation
+        animation.start();
     },
     
     addOnePipe: function(x, y) {
