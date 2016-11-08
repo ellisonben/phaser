@@ -43,7 +43,7 @@ var mainState = {
                 //create the bricks at the appropriate position
                 var brick = game.add.sprite(65+i*60, 55+j*35, 'brick');
                 //bricks don't move when hit by ball
-                brick.body.immovable = true
+                brick.body.immovable = true;
                 //add brick to the group
                 this.bricks.add(brick);
             }
@@ -55,28 +55,31 @@ var mainState = {
         this.ball = game.add.sprite(200, 300, 'ball');
         
         //assign initial velocity to ball
-        this.ball.body.velocity.x = 200;
-        this.ball.body.velocity.y = 200;
+        this.ball.body.velocity.x = 300;
+        this.ball.body.velocity.y = 300;
         
         //make ball bounce
         this.ball.body.bounce.setTo(1);
         this.ball.body.collideWorldBounds = true;
+        
+        //give the ball gravity
+        this.ball.body.gravity.y = 150; 
     },
     
     update: function() {
         //paddle
         //move the paddle left/right when an arrow key is pressed
         if (this.left.isDown) {
-            this.paddle.body.velocity.x = -300;
+            this.paddle.body.velocity.x = Math.max(-500, this.paddle.body.velocity.x - 60);
         } else if (this.right.isDown) {
-            this.paddle.body.velocity.x = 300;
+            this.paddle.body.velocity.x = Math.min(500, this.paddle.body.velocity.x + 60);
         } else {
             this.paddle.body.velocity.x = 0;
         }
         
         //collisions
         //add collisions between ball and paddle
-        game.physics.arcade.collide(this.paddle, this.ball);
+        game.physics.arcade.collide(this.paddle, this.ball, this.paddleHit, null, this);
         
         //call the hit function when ball hits brick
         game.physics.arcade.collide(this.ball, this.bricks, this.hit, null, this);
@@ -88,10 +91,14 @@ var mainState = {
         
     },
     
+    paddleHit: function() {
+        this.ball.body.velocity.x += this.paddle.body.velocity.x / 5;
+    },
+    
     //removes brick from game when hit by ball - called on collision
     hit: function(ball, brick) {
         brick.kill();
-    }
+    },
 }
 
 var game = new Phaser.Game(400, 450);
